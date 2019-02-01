@@ -1,0 +1,290 @@
+<!DOCTYPE HTML>
+<html>
+{% load staticfiles %}
+
+<head>
+<title> Pizza Surveys & Tournaments </title>
+<link rel=" shortcut icon" type="image/png" href="{% static 'blog/images/favicon.png' %}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<meta name="description" content="Pizza Surveys & Tournaments"/>
+<meta property="og:title" content="Pizza Surveys & Tournaments"/>
+<meta property="og:site_name" content="maxcandocia.com"/>
+<meta property="og:url" content="https://maxcandocia.com/pizza/"/>
+<meta property="og:description" content="Pizza Surveys  & Tournaments"/>
+<!--object.get_og_type_tag|safe}}-->
+<meta property="og:locale" content="en_US" /> 
+<meta property="fb:admins" content="1016924673"/>
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://maxcandocia.com/pizza/"/>
+<meta name="twitter:title" content="Pizza Survey & Tournaments"/>
+<meta name="twitter:description" content="Pizza Surveys & Tournaments"/>
+<meta name="twitter:text:description" content="Pizza Surveys & Tournaments"/>
+<!--
+object.get_twitter_image_tag|safe}}
+object.get_og_image_tag|safe}}
+object.header_html|safe}}
+-->
+<script> function get_pk(){return "{{visit_pk}}";}</script>
+<meta charset="UTF-8"/>
+</head>
+<body>
+
+<style>
+
+@-moz-document url-prefix() {
+.webtitle{
+ font-size:70%;
+}
+
+.navlink{
+ font-size:125%;
+ transform-origin: 0px 4px;
+}
+
+}
+</style>
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.10";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+<script src="{% static 'ifvisible.js/src/ifvisible.js' %}"></script>
+<script src="{% static 'TimeMe/timeme.js' %}"></script>
+<script src="{% static 'js-cookie/src/js.cookie.js' %}"></script>
+<style>
+  .fb-page{
+  width:40%;
+  margin:auto;
+  display:table;
+  }
+  div.pagetitle{
+    top:-12px;
+  }
+</style>
+
+{% csrf_token %}
+<script> 
+var outbound = '';
+var outbound_id = '';
+setOutbound = function(a){
+  console.log("outbound link: " + a.href)
+  outbound = a.href;
+  outbound_id = a.id;
+  
+};
+$('body').on("click","a", function(){
+    console.log("triggered");
+    setOutbound(this);
+});
+
+
+var csrftoken = Cookies.get('csrftoken')
+$.ajaxSetup({
+	beforeSend: function(xhr,settings){
+	xhr.setRequestHeader("X-CSRFToken",csrftoken);
+	}
+});
+
+function pad(number, length){
+    var str = "" + number
+    while (str.length < length) {
+        str = '0'+str
+    }
+    return str
+}
+
+var offset = new Date().getTimezoneOffset()
+offset = ((offset<0? '+':'-')+ // Note the reversed sign!
+          pad(parseInt(Math.abs(offset/60)), 2)+
+          pad(Math.abs(offset%60), 2))
+          
+         
+$(document).ready( function() {
+
+var width = screen.width;
+var height = screen.height;
+var window_width = $(window).width();
+var window_height = $(window).height();
+
+$.ajax({url:"/visit_onload/",type:"POST",
+data:{visit_pk:"{{visit_pk}}",screen_width:width,screen_height:height,window_width:window_width,
+window_height:window_height,timezone_offset:offset
+},
+});
+
+console.log("loading timer");
+TimeMe.setIdleDurationInSeconds(60);
+TimeMe.setCurrentPageName("PIZZA");
+TimeMe.initialize();  
+console.log("loaded timer");
+});
+
+window.onbeforeunload = function(event){
+
+var timeSpentOnPage = TimeMe.getTimeOnCurrentPageInSeconds();
+$.ajax({url:"/handle_visit/",type:"POST",
+data:{time:timeSpentOnPage,url:"{{request.get_full_path}}",
+visit_pk:"{{visit_pk}}",outbound:outbound,outbound_id:outbound_id
+
+},
+});
+}
+</script>
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<link rel="stylesheet" type="text/css" href="{% static 'blog/style.css' %}"/>
+
+<div class="top">
+<div class = "top_container">
+<div class = "pagetitle">
+<h1> <a class="webtitle" id="webtitle" href = "https://maxcandocia.com/">
+Analysis for Many Audiences </a></h1>
+</div>
+
+<div class="topnav_div">
+<ul class="topnav">
+<li class="tt"> <a id="home_navigation" class="navlink left1" 
+href = "https://maxcandocia.com/" id="home">Home </a></li> 
+<li id="archive_navigation" class="tt"> <a class = "navlink mid1" 
+href="https://maxcandocia.com/archive?page=1" id="archive">Archive </a></li> 
+<li id="about_navigation" class="tt"> <a class= "navlink mid1" 
+href="https://maxcandocia.com/about" id="about"> About </a></li>
+<li id="quizzes_navigation" class="tt"> <a class= "navlink right1" 
+href="https://maxcandocia.com/quiz/" id="quizzes"> Quizzes </a></li>
+</ul>
+</div>
+</div>
+</div>
+
+<!--main content here-->
+
+<div id="main_content">
+
+<!-- title & description -->
+
+<p> The pizza survey application is a straightforward way to send surveys to a group of people to determine what types of pizzas to order for a gathering. Additionally, you can make bracketed tournaments with this information, either grouping people together who have the most similar pizza preferences, or the most dissimilar preferences. </p>
+
+<!-- button/link to app -->
+
+<div id="create_survey_div">
+  <span id="create_survey_box"><a href="https://maxcandocia.com/pizza/survey/create">CREATE SURVEY</a></span>
+</div>
+
+<!-- created surveys (based on cookies, maybe session) if they exist (do this feature last)-->
+
+<!-- example (plus example live link)-->
+
+</div>
+<!--end main content-->
+
+
+<div id="outer_fb_div">
+<br/>
+<div class="fb-page" data-href="https://www.facebook.com/maxcandociacom-142797083000804/" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/maxcandociacom-142797083000804/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/maxcandociacom-142797083000804/">maxcandocia.com</a></blockquote></div>
+
+</div>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';
+if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';
+fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+   
+</div>
+<br/>
+</div>
+
+
+    <script>
+      window.___gcfg = {
+        lang: 'en-US',
+        parsetags: 'onload'
+      };
+    </script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+    
+<div class="endofpage"></br></div>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-72893625-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<script>
+$('a').bind('touchstart mousedown', function(event){
+var metakey = event.metaKey;
+var shiftkey = event.shiftKey;
+var altkey = event.altKey;
+var ctrlkey = event.ctrlKey;
+var type = event.type;
+var clientX = event.clientX;
+var clientY = event.clientY;
+var pageX = event.pageX;
+var pageY = event.pageY;
+var screenX = event.screenX;
+var screenY = event.screenY;
+
+switch (event.which){
+  case 1:
+   button = 'left';
+   break;
+  case 2:
+   button = 'middle';
+   break;
+  case 3:
+   button = 'right';
+   break;
+  default:
+   button = 'other';
+}
+
+data = {
+page_url:"{{request.get_full_path}}",
+visit_id:"{{visit_pk}}",
+link_text:$(this).text(),
+link_id:$(this).attr('id'),
+link_href:$(this).attr('href'),
+button:button,
+metakey:metakey,
+shiftkey:shiftkey,
+altkey:altkey,
+ctrlkey:ctrlkey,
+button_type:type,
+clientX:clientX,
+clientY:clientY,
+pageX:pageX,
+pageY:pageY,
+screenX:screenX,
+screenY:screenY,
+n_buttons:event.buttons,
+button_id:event.button
+};
+$.ajax({url:'/link_click/',
+type:'POST',
+data:data
+}
+);
+});
+
+</script>
+
+</body>
+</html>

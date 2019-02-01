@@ -1,0 +1,566 @@
+<!DOCTYPE HTML>
+<html>
+{% load staticfiles %}
+
+<head>
+<title> {{object.title}}</title>
+<link rel=" shortcut icon" type="image/png" href="{% static 'blog/images/favicon.png' %}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<meta name="description" content="{{object.meta_description}}"/>
+{{object.author_meta_profile|safe}}
+<meta property="og:title" content="{{object.get_og_title}}"/>
+<meta property="og:site_name" content="maxcandocia.com"/>
+<meta property="og:url" content="{{object.get_absolute_url}}"/>
+<meta property="og:description" content="{{object.og_description}}"/>
+{{object.get_og_type_tag|safe}}
+<meta property="og:locale" content="en_US" /> 
+<meta property="fb:admins" content="1016924673"/>
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="{{object.get_absolute_url}}"/>
+<meta name="twitter:title" content="{{object.get_og_title}}"/>
+<meta name="twitter:description" content="{{object.get_og_description}}"/>
+<meta name="twitter:text:description" content="{{object.get_og_description}}"/>
+{{object.get_twitter_image_tag|safe}}
+{{object.get_og_image_tag|safe}}
+{{object.header_html|safe}}
+<script> function get_pk(){return "{{visit_pk}}";}</script>
+<meta charset="UTF-8"/>
+</head>
+<body>
+
+<style>
+
+@-moz-document url-prefix() {
+.webtitle{
+ font-size:70%;
+}
+
+.navlink{
+ font-size:125%;
+ transform-origin: 0px 4px;
+}
+
+}
+</style>
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.10";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+<script src="{% static 'ifvisible.js/src/ifvisible.js' %}"></script>
+<script src="{% static 'TimeMe/timeme.js' %}"></script>
+<script src="{% static 'js-cookie/src/js.cookie.js' %}"></script>
+<style>
+  .fb-page{
+  width:40%;
+  margin:auto;
+  display:table;
+  }
+  div.pagetitle{
+    top:-12px;
+  }
+</style>
+
+{% csrf_token %}
+<script> 
+var outbound = '';
+var outbound_id = '';
+setOutbound = function(a){
+  console.log("outbound link: " + a.href)
+  outbound = a.href;
+  outbound_id = a.id;
+  
+};
+$('body').on("click","a", function(){
+    console.log("triggered");
+    setOutbound(this);
+});
+
+
+var csrftoken = Cookies.get('csrftoken')
+$.ajaxSetup({
+	beforeSend: function(xhr,settings){
+	xhr.setRequestHeader("X-CSRFToken",csrftoken);
+	}
+});
+
+function pad(number, length){
+    var str = "" + number
+    while (str.length < length) {
+        str = '0'+str
+    }
+    return str
+}
+
+var offset = new Date().getTimezoneOffset()
+offset = ((offset<0? '+':'-')+ // Note the reversed sign!
+          pad(parseInt(Math.abs(offset/60)), 2)+
+          pad(Math.abs(offset%60), 2))
+          
+         
+$(document).ready( function() {
+
+var width = screen.width;
+var height = screen.height;
+var window_width = $(window).width();
+var window_height = $(window).height();
+
+$.ajax({url:"/visit_onload/",type:"POST",
+data:{visit_pk:"{{visit_pk}}",screen_width:width,screen_height:height,window_width:window_width,
+window_height:window_height,timezone_offset:offset
+},
+});
+
+console.log("loading timer");
+TimeMe.setIdleDurationInSeconds(60);
+TimeMe.setCurrentPageName("ARTICLE - {{object.title}}");
+TimeMe.initialize();  
+console.log("loaded timer");
+});
+
+window.onbeforeunload = function(event){
+
+var timeSpentOnPage = TimeMe.getTimeOnCurrentPageInSeconds();
+$.ajax({url:"/handle_visit/",type:"POST",
+data:{time:timeSpentOnPage,url:"{{request.get_full_path}}",
+visit_pk:"{{visit_pk}}",outbound:outbound,outbound_id:outbound_id
+
+},
+});
+}
+</script>
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.5";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<link rel="stylesheet" type="text/css" href="{% static 'blog/style.css' %}"/>
+
+<div class="top">
+<div class = "top_container">
+<div class = "pagetitle">
+<h1> <a class="webtitle" id="webtitle" href = "https://maxcandocia.com/">
+Analysis for Many Audiences </a></h1>
+</div>
+
+<div class="topnav_div">
+<ul class="topnav">
+<li class="tt"> <a id="home_navigation" class="navlink left1" 
+href = "https://maxcandocia.com/" id="home">Home </a></li> 
+<li id="archive_navigation" class="tt"> <a class = "navlink mid1" 
+href="https://maxcandocia.com/archive?page=1" id="archive">Archive </a></li> 
+<li id="about_navigation" class="tt"> <a class= "navlink mid1" 
+href="https://maxcandocia.com/about" id="about"> About </a></li>
+<li id="quizzes_navigation" class="tt"> <a class= "navlink right1" 
+href="https://maxcandocia.com/quiz/" id="quizzes"> Quizzes </a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+<div class="article">
+<!-- begin garlicoin referral code -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!--
+<script> 
+  // for Garlicoin referral
+  has_clicked=false;
+ {% with absurl=object.get_absolute_url %}
+  page_url="https://maxcandocia.com{{absurl}}";
+  {% endwith %}
+</script>
+<style>
+  #garlicoin_referral_generator_div{
+  height:200px;
+  width:720px;
+  background-image:url(https://maxcandocia.com/media/misc/garlicoin_referral_button.png);
+  background-color:#E3E3E3;
+  }
+  .garlicoin_warning{
+  color:red;
+  }
+  .garlic, .garlic-button{
+  font-size: 28px;
+  }
+
+  .garlic-button{
+  background-color: #49E;
+  float:left;
+  margin:auto;
+  }
+
+  div.garlic{
+  height:44px;
+  width:100%;
+  margin:auto;
+  text-align:center;
+  justify-content:center;
+  align-items:center;
+  display:flex;
+  }
+
+  #garlic_wallet_id_input{
+  height:30px;
+  line-height:28px;
+  margin-top:-5px;
+  }
+
+  div.garlic a{
+  color:#330;
+  }
+
+  #garlicoin_this_page_referral_out{
+    font-size: 20px;
+  }
+</style>
+<div id="garlicoin_referral_generator_div">
+
+</div>
+
+<script>
+  $('#garlicoin_referral_generator_div').click(function(){
+  div_id = '#garlicoin_referral_generator_div';
+  $(div_id).css('background-image', 'none');
+  if (!has_clicked){
+  has_clicked=true;
+  $(div_id).append('<div class="garlic" id="garlic1_div"><span id="wallet_id_span">Insert your Garlicoin Wallet Address: <input id="garlic_wallet_id_input"/></span></div>');
+  $(div_id).append('<div class="garlic" id="garlic2_div"><button type="button" class="garlic-button" id="generate_garlic_link_button">Generate Link!</button></div>');
+  $(div_id).append('<div class="garlic" id="garlic3_div"><a href="https://maxcandocia.com/garlicoin_referral_program/" target="_blank" id="garlicoin_referral_program_out">About Garlicoin Referral Program</a></div>');
+  $(div_id).append('<div class="garlic" id="garlic4_div"><span id="referral_link_span"></span></div>');
+
+  $("#generate_garlic_link_button").click(function(){
+  var wallet_address=$('#garlic_wallet_id_input').val();
+  if (wallet_address.length != 34){
+  $('#referral_link_span').html('<p class="garlicoin_warning">Valid Garlicoin wallet addresses have a length of 34!<p>');
+    return 'none'
+    }
+    var referral_link = page_url + '?garlicoin_ref=' + wallet_address;
+    console.log(page_url);
+    console.log(wallet_address);
+    $('#referral_link_span').html('<a href="' + referral_link + '" id="garlicoin_this_page_referral_out" target="_blank">' + referral_link + '</a>');
+    })
+    }
+
+  });
+  var isMobile = false; //initiate as false
+    // device detection
+    if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|ipad|iris|kindle|Android|Silk|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(navigator.userAgent) 
+        || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(navigator.userAgent.substr(0,4))) { 
+    //kill html if on mobile; too spammy/not useful
+        $('#garlicoin_referral_generator_div').html('<span></span>');
+    };
+</script>
+-->
+<!-- end garlicoin referral code-->
+
+
+<style>
+ #general_survey_div{
+ width:90%;
+ max-width:840px;
+ height:150px;
+ padding:4px;
+ float:left;
+ display:block;
+ font-family:sans-serif;
+ font-color:#333;
+ clear:right;
+
+ }
+ #general_survey_out{
+ font-size:30px;
+
+ }
+ #general_survey_out:link {
+ color:#333;
+ font-weight:bold;
+ text-decoration:none;
+ text-indent:-9999px;
+
+ }
+  #general_survey_out:hover  {
+ font-size:32px;
+ color:#333;
+ font-weight:bold;
+ text-decoration:none;
+ text-indent:-9999px;
+ }
+  #general_survey_out:visited, #general_survey_out:visited > div  {
+			color:#333;
+			font-weight:bold;
+			text-decoration:line-through;
+			text-decoration-color:red;
+    text-indent:-9999px;
+ }
+
+ #general_survey_inner_div{
+			width:100%;
+			height:100%;
+			text-align:center;
+			vertical-align:middle;
+			line-height:150px;
+			background-image:url("https://maxcandocia.com/media/misc/fourth_of_july_banner_720.png");
+			background-repeat:no-repeat;
+			box-shadow: 0 0 28px 16px #FFF inset ;
+			clear:right;
+ }
+</style>
+
+<!--
+<div id="general_survey_div" class="survey">
+  <a href="https://maxcandocia.com/link/fourth-of-july-survey-mc" id="general_survey_out" target="_blank" >
+    <div id="general_survey_inner_div"></div>
+</a>
+</div>
+-->
+
+
+<script>
+<!--
+$('#general_survey_inner_div').click(function(){
+$('#general_survey_inner_div').text('Thank You :-)');
+
+});
+-->
+</script>
+
+<br/>
+<br/>
+
+
+<h1 style='display:block;clear:left;'>{{object.title}}</h1>
+<p class="article_authors">By {{object.author_list| safe}}</p> | 
+ <p class="article_date">{{object.formatted_date}}</p>
+ 
+ {% if object.last_updated %}
+ </br> <p id="last_updated_text">Last Updated {{object.last_updated|date:"SHORT_DATE_FORMAT"}} </p>
+ 
+ {% endif %}
+
+ {% with total_pages=object.n_pages %}
+ {% with absurl=object.get_absolute_url %}
+ {% for apage in object.articlepage_set.all %}
+	{% if apage.page_number == article_page_number %}
+	
+		{{apage.HTML|safe}}
+		
+		{% if total_pages > 1 %}
+			</br></br>
+			<div id="pagination">
+			<span id="article_page_navigation">
+			{% if article_page_number > 1 %}
+				{% if article_page_number == 2 %}
+					<a id="previous_link" href="{{absurl}}">prev</a>
+				{% else %}
+					<a id="previous_link" href="{{absurl}}?page={{article_page_number|add:-1}}">prev</a>
+				{% endif %}
+			{% endif %}
+			
+			Page {{article_page_number}} of {{total_pages}}
+			
+			{% if article_page_number < total_pages %}
+				<a id="next_link" href="{{absurl}}?page={{article_page_number|add:1}}">next</a>
+			{% endif %}
+			</span>
+			</div>
+		
+		{% endif %}
+
+	{% endif %}
+ {% endfor %}
+ {% endwith %}
+ {% endwith %}
+ 
+ <br>
+ 
+<div id="tag_container">
+<p id="tag_intro">Tags:&nbsp;</p>
+<div class="tag_list_div">
+<ul class="tags_list">
+{% for tag in article.tags.all|dictsort:"text" %}
+<li class="tag_element"> <a id="tag_{{tag.text}}" href="{{tag.get_search_url}}" class="tag_link">{{tag.text}}</a></li>
+{% endfor %}
+</ul>
+</div>
+</div>
+
+<style>
+.rec_widget_out {
+  color:#000;
+  display:inline-block;
+  width:50%;
+  float:left;
+}
+
+#referring_widget_div:before, .rec_widget_out {
+  vertical-align:middle;
+  display:inline-block;
+}
+
+.widget_description_div {
+ text-align:left;
+}
+
+#referring_widget_div {
+  display:inline-block;
+  color:black;
+  margin:0 auto;
+  width:100%;
+  text-align:center;
+  clear:right;
+}
+
+#referring_widget_div:before {
+  content:"";
+  height:100%;
+}
+
+. widget_title_div > h4, .widget_description_div > p {
+  color:black;
+}
+.widget_div {
+  display:inline-block;
+  width:98%;
+}
+</style>
+<div id="referring_widget_div">
+{{object.generate_widget_html|safe}}
+</div>
+ <!--
+ <div id="share-buttons">
+    
+
+    <a id="email-share-button" title="share by email" href="mailto:?Subject=Analysis for Many Audiences {{article.title}}&body=Check out this article {{article.web_url}}"><img src="{% static 'blog/images/email_icon.png' %}" alt="Email" /></a>
+ 
+
+    <div id="fb-share-button" class="fb-share-button" data-href="{{article.web_url}}" data-layout="button"></div>
+    
+
+   <a id="gplus-share-button" href="https://plus.google.com/share?url={{article.web_url}}" onclick="javascript:window.open(this.href,
+  '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><img
+  src="https://www.gstatic.com/images/icons/gplus-16.png" alt="Share on Google+"/></a>
+    
+
+    <script id="linkedIn-share-button" src="//platform.linkedin.com/in.js" type="text/javascript"> lang: en_US</script>
+<script type="IN/Share" data-url="{{article.web_url}}"></script>
+    
+
+    <a id="reddit-share-button" href="//www.reddit.com/submit" 
+    onclick="window.location = '//www.reddit.com/submit?url={{article.web_url}}' + encodeURIComponent(window.location); return false">
+    <img src="//www.redditstatic.com/spreddit1.gif" alt="submit to reddit" border="0" /></a>
+    
+     
+
+    <a id="twitter-share-button" href="https://twitter.com/share" class="twitter-share-button" data-via="ImTheStatMan" data-count="none">Tweet</a>
+
+-->
+<div id="outer_fb_div">
+<br/>
+<div class="fb-page" data-href="https://www.facebook.com/maxcandociacom-142797083000804/" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/maxcandociacom-142797083000804/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/maxcandociacom-142797083000804/">maxcandocia.com</a></blockquote></div>
+
+</div>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';
+if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';
+fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+   
+</div>
+<br/>
+</div>
+
+
+    <script>
+      window.___gcfg = {
+        lang: 'en-US',
+        parsetags: 'onload'
+      };
+    </script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+    
+<div class="endofpage"></br></div>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-72893625-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<script>
+$('a').bind('touchstart mousedown', function(event){
+var metakey = event.metaKey;
+var shiftkey = event.shiftKey;
+var altkey = event.altKey;
+var ctrlkey = event.ctrlKey;
+var type = event.type;
+var clientX = event.clientX;
+var clientY = event.clientY;
+var pageX = event.pageX;
+var pageY = event.pageY;
+var screenX = event.screenX;
+var screenY = event.screenY;
+
+switch (event.which){
+  case 1:
+   button = 'left';
+   break;
+  case 2:
+   button = 'middle';
+   break;
+  case 3:
+   button = 'right';
+   break;
+  default:
+   button = 'other';
+}
+
+data = {
+page_url:"{{request.get_full_path}}",
+visit_id:"{{visit_pk}}",
+link_text:$(this).text(),
+link_id:$(this).attr('id'),
+link_href:$(this).attr('href'),
+button:button,
+metakey:metakey,
+shiftkey:shiftkey,
+altkey:altkey,
+ctrlkey:ctrlkey,
+button_type:type,
+clientX:clientX,
+clientY:clientY,
+pageX:pageX,
+pageY:pageY,
+screenX:screenX,
+screenY:screenY,
+n_buttons:event.buttons,
+button_id:event.button
+};
+$.ajax({url:'/link_click/',
+type:'POST',
+data:data
+}
+);
+});
+
+</script>
+
+</body>
+</html>
